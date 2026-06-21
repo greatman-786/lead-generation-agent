@@ -1,0 +1,219 @@
+{
+  "name": "Lead generation agent",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lead-generation",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "7a31724d-6424-425b-bc76-3cdea38f6b69",
+      "name": "Webhook",
+      "webhookId": "35607576-7278-4134-958b-2653556a4b83"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.businessType }} business in {{ $json.body.location }}. Find 10 potential leads for this business. For each lead provide: Business name, Contact person, Email, Phone, Website, and qualification score (1-10). Format as a list.",
+        "options": {
+          "systemMessage": "You are an expert lead generation specialist. \nYour job is to help small businesses find potential customers.\n\nWhen given a business type and location:\n1. Identify ideal customer profiles\n2. Suggest 10 potential leads\n3. Score each lead from 1-10 (10 = hottest lead)\n4. Provide actionable outreach tips for each lead\n5. Keep it practical and specific\n\nAlways focus on LOCAL businesses that would benefit most.You are a helpful assistant"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        352,
+        144
+      ],
+      "id": "d7f47e36-69cb-41b5-b4bd-51b6d0cc99c1",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/179bHohs0qh92Zqhm_w9iwkvNJSQX2svY9yczEO7kuiY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/179bHohs0qh92Zqhm_w9iwkvNJSQX2svY9yczEO7kuiY/edit?gid=0#gid=0",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            " Business Name": "={{ $json.output }}",
+            "Date": "={{ $now }}"
+          },
+          "matchingColumns": [
+            " Business Name"
+          ],
+          "schema": [
+            {
+              "id": " Business Name",
+              "displayName": " Business Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": " Contact Person",
+              "displayName": " Contact Person",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone",
+              "displayName": "Phone",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Website",
+              "displayName": "Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        144
+      ],
+      "id": "c3475d76-7a9f-4dba-bb55-dfc437116cd4",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "en2PnQSHqx3evDNr",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-6",
+          "cachedResultName": "Claude Sonnet 4.6"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.5,
+      "position": [
+        352,
+        240
+      ],
+      "id": "055d40bb-9978-45c9-a586-35dee3e7ea2d",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "pyioWGXOtb0Ra461",
+          "name": "Anthropic account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "38cc2211-5847-462c-a269-6b9f163e0fb5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76310f28f287f67827e96964e205f23daec680ba6cc949573ea2ee14a789e87a"
+  },
+  "id": "3lhvO4y8WCvLtv2Q",
+  "tags": []
+}
