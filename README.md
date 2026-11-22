@@ -1,119 +1,75 @@
 # 🎯 Lead Generation Agent
 
-An AI-powered lead generation agent built with **n8n** that automatically finds potential customers, qualifies them using AI, and saves structured lead data directly to **Google Sheets** — ready for your sales pipeline.
+An n8n workflow that takes incoming lead data, qualifies and scores it with an LLM, and writes structured results straight to Google Sheets — ready for a sales pipeline.
 
----
+## 🚀 What it does
 
-## 🚀 Features
+- Receives lead data by webhook
+- Qualifies and scores each lead with an LLM
+- Writes structured rows to Google Sheets
+- Runs unattended once activated
+- Processes each lead as it arrives
 
-- 🔍 **Automatically discovers** potential leads
-- 🧠 **AI qualifies and scores** each lead based on relevance
-- 📊 **Saves structured data** directly to Google Sheets
-- 🔄 **Fully automated** — runs without manual input
-- ⚡ **Real-time processing** — leads captured instantly
-- 📁 **Organized output** — clean, structured data ready for outreach
-
----
-
-## 🛠️ Tech Stack
+## 🛠️ Tech stack
 
 | Tool | Purpose |
-|------|---------|
+|---|---|
 | n8n | Workflow automation engine |
-| Anthropic Claude / Gemini | AI lead qualification & scoring |
-| Google Sheets API | Lead storage and organization |
+| Anthropic Claude / Gemini | Lead qualification and scoring |
+| Google Sheets API | Lead storage |
 
----
+## 🔄 How it works
 
-## 🔄 How It Works
-Trigger Fires
+```
+Webhook receives lead data
+        ↓
+Sent to LLM for qualification
+        ↓
+LLM scores and structures the lead
+        ↓
+Row written to Google Sheets
+```
 
-↓
+## ⚙️ Setup
 
-Lead Source Data Collected
+1. Have n8n running, local or cloud
+2. Import `Lead generation agent.json` into your n8n instance
+3. Add your LLM API key (Anthropic or Gemini) in credentials
+4. Connect your Google Sheets account via OAuth
+5. Set your target Google Sheet ID in the workflow
+6. Activate the workflow
 
-↓
+This repo is the workflow export, not a hosted service — you run it in your own n8n instance.
 
-Sent to AI Model for Qualification
+## 📁 Files
 
-↓
-
-AI Scores & Structures Lead Info
-
-↓
-
-Data Written to Google Sheets
-
-↓
-
-Sales Pipeline Ready
-
----
-
-## ⚙️ Setup & Installation
-
-1. Make sure you have **n8n** running (local or cloud)
-2. Import the `lead-generation-agent.json` file into your n8n instance
-3. Add your **LLM API key** (Anthropic or Gemini) in credentials
-4. Connect your **Google Sheets account** via OAuth
-5. Set your target **Google Sheet ID** in the workflow
-6. **Activate** the workflow
-7. Done — leads start flowing in automatically!
-
----
-
-## 📁 Project Structure
+```
 lead-generation-agent/
+├── Lead generation agent.json   # the n8n workflow — import this
+└── README.md
+```
 
-│
+## 🧠 What the LLM layer does
 
-├── lead-generation-agent.json   # n8n workflow file (import this)
+- Qualifies leads against the criteria defined in the workflow
+- Extracts name, company, role and contact details
+- Scores each lead by relevance
+- Formats the data before it reaches Google Sheets
 
-└── README.md                    # Project documentation
+## ⚡ Problems I hit, and what I did
 
----
+**1. Ran out of Anthropic credits mid-build.** The qualification step stopped dead. Switched to Gemini's free tier as a drop-in replacement — which is the argument for keeping the LLM provider swappable from the start.
 
-## 🧠 AI Integration
+**2. Google Sheets OAuth token expired during testing.** Worse than a crash: leads were processed and then silently not saved. Fixed the credentials and now check the Sheets node shows green before activating anything.
 
-The AI layer does the heavy lifting:
-- **Qualifies leads** based on predefined criteria
-- **Extracts key information** like name, company, role, contact details
-- **Scores each lead** by relevance and potential value
-- **Formats data cleanly** before writing to Google Sheets
+**3. The workflow was called "My workflow 2".** Unmanageable once you have several. Set a naming convention and renamed everything before pushing.
 
----
+**4. Gemini free-tier rate limits dropped leads under volume.** I've documented the limit rather than hidden it. A production run needs a paid tier or a request queue.
 
-## ⚡ Challenges & How I Solved Them
+## 💡 Use cases
 
-### 1. 🔑 API Credit Exhaustion Mid-Development
-**Problem:** Anthropic API credits ran out during testing, completely blocking the AI qualification step.  
-**Solution:** Switched to Google Gemini (free tier) as a drop-in replacement. This reinforced building workflows to be **LLM provider-agnostic** from day one.
-
-### 2. 📊 Google Sheets Connection Issues
-**Problem:** OAuth token for Google Sheets expired mid-workflow during testing, causing silent failures where leads were processed but never saved.  
-**Solution:** Added proper credential management in n8n and verified the Sheets node showed a green connection status before activating the workflow.
-
-### 3. 🔄 Workflow Naming & Organisation
-**Problem:** The workflow was initially saved with a generic default name ("My workflow 2"), making it hard to manage alongside other agents.  
-**Solution:** Established a clear naming convention for all agents upfront and renamed everything consistently before pushing to GitHub.
-
-### 4. ⚠️ Rate Limiting on Free Tier
-**Problem:** High-volume lead processing triggered Gemini's free-tier rate limits, causing some leads to be dropped.  
-**Solution:** Documented the limitation and designed the workflow with throttling in mind. Production deployment would use a paid API tier or a request queue.
+B2B prospecting · marketing campaign targeting · startup customer discovery · freelance client outreach
 
 ---
 
-## 💡 Use Cases
-
-- B2B sales prospecting
-- Marketing campaign targeting
-- Startup customer discovery
-- Freelance client outreach
-
----
-
-## 🙋‍♂️ Author
-
-**Asad** — Software Engineer  
-Building AI-powered automation tools for real-world use cases.# lead-generation-agent
-AI-powered lead generation agent built with n8n that finds potential customers and saves them to Google Sheets
+**Asad Ullah** — AI automation and QA engineer. [Portfolio](https://asad-portfolio-drab.vercel.app) · [GitHub](https://github.com/greatman-786)
