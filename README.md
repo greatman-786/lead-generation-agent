@@ -33,7 +33,7 @@ Row written to Google Sheets
 ## ⚙️ Setup
 
 1. Have n8n running, local or cloud
-2. Import `Lead generation agent.json` into your n8n instance
+2. Import `lead-generation-agent.json` into your n8n instance
 3. Add your LLM API key (Anthropic or Gemini) in credentials
 4. Connect your Google Sheets account via OAuth
 5. Set your target Google Sheet ID in the workflow
@@ -45,7 +45,7 @@ This repo is the workflow export, not a hosted service — you run it in your ow
 
 ```
 lead-generation-agent/
-├── Lead generation agent.json   # the n8n workflow — import this
+├── lead-generation-agent.json   # the n8n workflow — import this
 └── README.md
 ```
 
